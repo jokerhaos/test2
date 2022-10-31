@@ -44,6 +44,7 @@ func (p Cat) test() {
 }
 
 func (p *Cat) update() {
+	// 指针方法编译器底层做了优化 (*p1).Age 等价于 p.Age
 	p.Age += 1
 	fmt.Println("update", *p)
 }
