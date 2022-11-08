@@ -10,6 +10,12 @@ func main() {
 func test() {
 	// var intChan chan int
 
+	// 声明只写
+	// var chan2 chan<- int
+
+	// 声明只读
+	// var chan3 <-chan int
+
 	intChan := make(chan int, 53)
 
 	fmt.Printf("%T,%v\n", intChan, intChan)

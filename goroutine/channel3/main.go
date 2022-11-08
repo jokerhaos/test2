@@ -29,14 +29,14 @@ func main() {
 	}
 }
 
-func putNum(intChan chan int) {
+func putNum(intChan chan<- int) {
 	for i := 0; i < 80; i++ {
 		intChan <- i + 1
 	}
 	close(intChan)
 }
 
-func putPrimeChan(intChan chan int, primeChan chan int, exitChan chan bool) {
+func putPrimeChan(intChan <-chan int, primeChan chan<- int, exitChan <-chan bool) {
 	// 取intChan数据
 	for {
 		num, ok := <-intChan
