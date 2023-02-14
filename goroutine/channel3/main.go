@@ -36,7 +36,7 @@ func putNum(intChan chan<- int) {
 	close(intChan)
 }
 
-func putPrimeChan(intChan <-chan int, primeChan chan<- int, exitChan <-chan bool) {
+func putPrimeChan(intChan <-chan int, primeChan chan<- int, exitChan chan bool) {
 	// 取intChan数据
 	for {
 		num, ok := <-intChan
