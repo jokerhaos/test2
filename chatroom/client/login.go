@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	common "test/chatroom/common/message"
@@ -45,7 +46,10 @@ func login(userId int, userPwd string) (err error) {
 		fmt.Println("receive err=", err)
 		return
 	}
-	fmt.Println(msg)
-
+	var result common.LoginRes
+	json.Unmarshal([]byte(msg.Data), &result)
+	if result.Code != 200 {
+		return errors.New(result.Message)
+	}
 	return
 }
