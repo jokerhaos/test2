@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -32,18 +31,23 @@ func login(userId int, userPwd string) (err error) {
 	var msg common.Message
 	msg.Type = common.LoginResponse
 	msg.Data = string(jsonResult)
-	sendData, _ := json.Marshal(msg)
 
-	// 1.先发送长度，防止丢包
-	var pkgLen uint32
-	pkgLen = uint32(len(sendData))
-	var buf [4]byte
-	binary.BigEndian.PutUint32(buf[:4], pkgLen)
-	conn.Write(buf[:4])
-	fmt.Println("发送长度:", pkgLen)
+	// 给服务端发送消息
+	err = common.SendMessage(conn, msg)
+	if err != nil {
+		fmt.Println("send err=", err)
+		return err
+	}
 
-	// 2.发送消息数据
-	conn.Write(sendData)
+	// 接收服务端消息
+	for {
+		msg, err = common.ReadPkg(conn)
+		if err != nil {
+			fmt.Println("receive err=", err)
+			return
+		}
+		fmt.Println(msg)
+	}
 
 	return
 }

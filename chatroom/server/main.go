@@ -1,24 +1,78 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
+	common "test/chatroom/common/message"
 )
 
 func process(conn net.Conn) {
 	defer conn.Close()
-
 	for {
-		buf := make([]byte, 8096)
-		n, err := conn.Read(buf[:4])
-		if n != 4 || err != nil {
-			fmt.Println("conn.Read err=", err)
+		// fmt.Println(string(buf[:n]))
+		msg, err := common.ReadPkg(conn)
+		if err != nil {
+			if err == io.EOF {
+				fmt.Println("客户端退出,服务端也退出")
+				return
+			}
+			fmt.Println("readPkg err=", err)
 			return
 		}
-		fmt.Println(buf[:n])
-		// fmt.Println(string(buf[:n]))
-
+		fmt.Println(msg)
+		serverProcess(conn, &msg)
 	}
+}
+
+func serverLogin(msg *common.Message) (result common.LoginRes, err error) {
+	// 取出msg Data
+	var loginData common.LoginMes
+	err = json.Unmarshal([]byte(msg.Data), &loginData)
+	if err != nil {
+		fmt.Println("反序列失败")
+		return
+	}
+	// 判断用户id
+	if loginData.UserId == 100 && loginData.UserPwd == "123456" {
+		result.Code = 200
+		result.Message = "登录成功"
+	} else {
+		result.Code = 500
+		result.Message = "用户名或者密码错误"
+	}
+
+	return
+}
+
+// 根据客户端发送的消息类型分发函数
+func serverProcess(conn net.Conn, msg *common.Message) (err error) {
+	var resultMsg common.Message
+
+	switch msg.Type {
+	case common.LoginResponse:
+		// 处理登录
+		result, err := serverLogin(msg)
+		if err != nil {
+			return err
+		}
+		resultMsg.Type = common.LoginResult
+		data, err := json.Marshal(result)
+		if err != nil {
+			return err
+		}
+		resultMsg.Data = string(data)
+		return err
+	case common.RegisterResponse:
+	default:
+		fmt.Println("找不到的类型", msg.Type)
+	}
+
+	// 发送消息给客户端
+	err = common.SendMessage(conn, *msg)
+
+	return
 }
 
 func main() {
