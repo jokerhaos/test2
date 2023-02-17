@@ -22,7 +22,11 @@ func process(conn net.Conn) {
 			return
 		}
 		fmt.Println(msg)
-		serverProcess(conn, &msg)
+		err = serverProcess(conn, &msg)
+		if err != nil {
+			fmt.Println("serverProcess err=", err)
+			return
+		}
 	}
 }
 
@@ -57,20 +61,17 @@ func serverProcess(conn net.Conn, msg *common.Message) (err error) {
 		if err != nil {
 			return err
 		}
+		data, _ := json.Marshal(result)
 		resultMsg.Type = common.LoginResult
-		data, err := json.Marshal(result)
-		if err != nil {
-			return err
-		}
 		resultMsg.Data = string(data)
-		return err
 	case common.RegisterResponse:
 	default:
 		fmt.Println("找不到的类型", msg.Type)
 	}
 
+	fmt.Println(resultMsg)
 	// 发送消息给客户端
-	err = common.SendMessage(conn, *msg)
+	err = common.SendMessage(conn, resultMsg)
 
 	return
 }

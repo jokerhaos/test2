@@ -40,14 +40,12 @@ func login(userId int, userPwd string) (err error) {
 	}
 
 	// 接收服务端消息
-	for {
-		msg, err = common.ReadPkg(conn)
-		if err != nil {
-			fmt.Println("receive err=", err)
-			return
-		}
-		fmt.Println(msg)
+	msg, err = common.ReadPkg(conn)
+	if err != nil {
+		fmt.Println("receive err=", err)
+		return
 	}
+	fmt.Println(msg)
 
 	return
 }
