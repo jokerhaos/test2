@@ -11,7 +11,10 @@ func processMsg(conn net.Conn) {
 	defer conn.Close()
 	for {
 		// fmt.Println(string(buf[:n]))
-		msg, err := utils.ReadPkg(conn)
+		tf := &utils.Transfer{
+			Conn: conn,
+		}
+		msg, err := tf.ReadPkg()
 		if err != nil {
 			if err == io.EOF {
 				fmt.Println("客户端退出,服务端也退出")

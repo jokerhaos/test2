@@ -6,10 +6,14 @@ import (
 	common "test/chatroom/common/message"
 )
 
-func ServerLogin(msg *common.Message) (result common.LoginRes, err error) {
+type UserProcess struct {
+	Msg *common.Message
+}
+
+func (this *UserProcess) ServerLogin() (result common.LoginRes, err error) {
 	// 取出msg Data
 	var loginData common.LoginMes
-	err = json.Unmarshal([]byte(msg.Data), &loginData)
+	err = json.Unmarshal([]byte(this.Msg.Data), &loginData)
 	if err != nil {
 		fmt.Println("反序列失败")
 		return

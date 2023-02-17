@@ -16,7 +16,10 @@ func ServerProcess(conn net.Conn, msg *common.Message) (err error) {
 	switch msg.Type {
 	case common.LoginResponse:
 		// 处理登录
-		result, err := process.ServerLogin(msg)
+		userProcess := &process.UserProcess{
+			Msg: msg,
+		}
+		result, err := userProcess.ServerLogin()
 		if err != nil {
 			return err
 		}
@@ -30,7 +33,10 @@ func ServerProcess(conn net.Conn, msg *common.Message) (err error) {
 
 	fmt.Println(resultMsg)
 	// 发送消息给客户端
-	err = utils.SendMessage(conn, resultMsg)
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	err = tf.SendMessage(resultMsg)
 
 	return
 }
