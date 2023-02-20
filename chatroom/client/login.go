@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	common "test/chatroom/common/message"
+	utils "test/chatroom/util"
 )
 
 // 登录
@@ -34,14 +35,17 @@ func login(userId int, userPwd string) (err error) {
 	msg.Data = string(jsonResult)
 
 	// 给服务端发送消息
-	err = common.SendMessage(conn, msg)
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	err = tf.SendMessage(msg)
 	if err != nil {
 		fmt.Println("send err=", err)
 		return err
 	}
 
 	// 接收服务端消息
-	msg, err = common.ReadPkg(conn)
+	msg, err = tf.ReadPkg()
 	if err != nil {
 		fmt.Println("receive err=", err)
 		return
