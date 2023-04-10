@@ -9,6 +9,7 @@ import (
 // 问一道思考题：如何并发100个任务，但是同一时间最多运行的10个任务
 func init() {
 	count := 10
+
 	num := 100
 	wg := sync.WaitGroup{}
 
