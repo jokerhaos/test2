@@ -10,7 +10,7 @@ import (
 func init() {
 	count := 10
 
-	num := 100
+	num := 1000
 	wg := sync.WaitGroup{}
 
 	c := make(chan struct{}, count)
