@@ -17,6 +17,7 @@ func (s *SignAlgo) SortParam(param map[string]interface{}) string {
 	for key := range param {
 		keys = append(keys, key)
 	}
+
 	sort.Strings(keys)
 
 	var sortedParams []string
