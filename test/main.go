@@ -13,6 +13,7 @@ type Node struct {
 	Children []*Node
 }
 
+// 给出一个数字在map数组中找到最相近的数字
 func solution(ranks map[int]int) int {
 	ranks[1] = 93
 	ranks[10] = 55
@@ -27,9 +28,6 @@ func solution(ranks map[int]int) int {
 	result := 0
 
 	for rank, honor := range ranks {
-		// if ho == honor {
-		// 	return rank
-		// }
 		gap = int(math.Abs(float64(honor - ho)))
 		if gap <= prevGap {
 			result = rank
@@ -43,5 +41,9 @@ func main() {
 	ranks := map[int]int{}
 	rank := solution(ranks)
 	fmt.Println(rank)
-
+	// var s string
+	// s = "abcdefg"
+	// for i, char := range s {
+	// 	fmt.Println(string(char), i)
+	// }
 }
