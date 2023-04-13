@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -17,7 +18,6 @@ func (s *SignAlgo) SortParam(param map[string]interface{}) string {
 	for key := range param {
 		keys = append(keys, key)
 	}
-	fmt.Println("v3")
 	sort.Strings(keys)
 
 	var sortedParams []string
@@ -30,8 +30,10 @@ func (s *SignAlgo) SortParam(param map[string]interface{}) string {
 		}
 
 		switch v := value.(type) {
-		case int:
+		case int, uint, int16, int32, int64:
 			sortedParams = append(sortedParams, fmt.Sprintf("%s=%d", key, v))
+		case float64, float32:
+			sortedParams = append(sortedParams, fmt.Sprintf("%s=%f", key, v))
 		default:
 			sortedParams = append(sortedParams, key+"="+value.(string))
 		}
@@ -57,6 +59,7 @@ func (s *SignAlgo) EnAES(data map[string]interface{}, secret string, iv string) 
 	str := toJSONString(data)
 	cipher, _ := aes.NewCipher([]byte(secret))
 	encrypted := make([]byte, len(str))
+	fmt.Println(str, cipher, encrypted)
 	cipher.Encrypt(encrypted, []byte(str))
 	return base64.StdEncoding.EncodeToString(encrypted)
 }
@@ -70,11 +73,9 @@ func (s *SignAlgo) DeAES(decrypt string, secret string, iv string) string {
 }
 
 func toJSONString(data map[string]interface{}) string {
-	// 将 map 转为 JSON 字符串
-	// 这里需要根据具体的 JSON 序列化库来实现
-	// 可以使用 Go 标准库的 encoding/json 或者第三方库如 jsoniter 等
-	// 这里只是一个简单的示例，具体实现需要根据具体需求进行调整
-	return ""
+	bytes, _ := json.Marshal(data)
+	stringData := string(bytes)
+	return stringData
 }
 
 func main() {
@@ -89,7 +90,7 @@ func main() {
 		"sign": "xxx",
 	}
 
-	secret := "secret_key"
+	secret := "aaaaaaaabbbbbbbb"
 
 	sortedParams := sign.SortParam(param)
 	println("Sorted Params:", sortedParams)
@@ -104,5 +105,13 @@ func main() {
 	println("Encrypted:", encrypted)
 
 	decrypted := sign.DeAES(encrypted, secret, "iv")
+
 	println("Decrypted:", decrypted)
+	a := uint(1)
+	b := uint(2)
+	c := uint(3)
+	d := a - b
+	e := a - c
+
+	fmt.Println(d, e)
 }
