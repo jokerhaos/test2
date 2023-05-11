@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"github.com/zeromicro/go-zero/core/threading"
 )
 
 type SignAlgo struct{}
@@ -114,4 +116,6 @@ func main() {
 	e := a - c
 
 	fmt.Println(d, e)
+
+	threading.GoSafe()
 }
