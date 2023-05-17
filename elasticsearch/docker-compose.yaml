@@ -41,7 +41,7 @@ services:
     privileged: true
     restart: always
     volumes:
-      - /docker/compose/es/config/kibana.yml:/usr/share/config/kibana.yml:Z
+      - /docker/compose/es/config/kibana.yml:/usr/share/kibana/config/kibana.yml:Z
     ports:
       - 5601:5601
     networks:
