@@ -10,10 +10,10 @@ services:
     container_name: elasticsearch
     restart: always
     volumes:                                  # 数据卷挂载路径设置,将本机目录映射到容器目录
-      - ./elasticsearch/data:/docker/compose/es/data:Z
-      - ./elasticsearch/logs:/docker/compose/es/logs:Z
-      - ./elasticsearch/config/elasticsearch.yml:/docker/compose/es/config/elasticsearch.yml:Z
-      - ./elasticsearch/plugins:/docker/compose/es/plugins:Z
+      - /docker/compose/es/data:/usr/share/elasticsearch/data:Z
+      - /docker/compose/es/logs:/usr/share/elasticsearch/logs:Z
+      - /docker/compose/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z
+      - /docker/compose/es/plugins:/usr/share/elasticsearch/plugins:Z
     ports:
       - 9200:9200
       - 9300:9300
@@ -35,12 +35,13 @@ services:
       - es
 
   kibana:
+
     image: kibana:7.6.2
     container_name: kibana
     privileged: true
     restart: always
     volumes:
-      - ./config/kibana.yml:/docker/compose/es/config/kibana.yml:Z
+      - /docker/compose/es/config/kibana.yml:/usr/share/config/kibana.yml:Z
     ports:
       - 5601:5601
     networks:
