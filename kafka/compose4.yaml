@@ -1,0 +1,81 @@
+version: '3.1'
+
+networks:
+  zk-net:
+    name: zk-net   # 网络名
+
+services:
+  zoo1:
+    container_name: zoo1 # 容器名称
+    image: confluentinc/cp-zookeeper:6.1.1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_JMX_PORT: 39999
+    networks:
+      - zk-net
+  kafka1:
+    container_name: kafka1 # 容器名称
+    image: confluentinc/cp-kafka:6.1.1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zoo1:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka1:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 19092
+    depends_on:
+      - zoo1
+    networks:
+      - zk-net
+  kafka2:
+    container_name: kafka2 # 容器名称
+    image: confluentinc/cp-kafka:6.1.1
+    ports:
+      - "9093:9092"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zoo1:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka2:9093'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 19093
+    depends_on:
+      - zoo1
+    networks:
+      - zk-net
+  kafka3:
+    container_name: kafka3 # 容器名称
+    image: confluentinc/cp-kafka:6.1.1
+    ports:
+      - "9094:9092"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: 'zoo1:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka3:9094'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 19094
+    depends_on:
+      - zoo1
+    networks:
+      - zk-net
+  eagle:
+    container_name: eagle # 容器名称
+    image: nickzurich/efak:3.0.1
+    volumes: # 挂载目录
+      - ./conf/system-config4.properties:/opt/efak/conf/system-config.properties
+    environment: # 配置参数
+      EFAK_CLUSTER_ZK_LIST: zoo1:2181
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    ports:
+      - 8048:8048
+    networks:
+      - zk-net

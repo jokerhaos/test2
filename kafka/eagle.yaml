@@ -1,0 +1,20 @@
+version: '3.1'
+
+networks:
+  zk-net:
+    name: zk-net   # 网络名
+
+services:
+  eagle:
+    image: rottenleaf/kafka-eagle:2.0.3
+    container_name: eagle
+    volumes:
+      - ./conf/system-config.properties2:/kafka-eagle/conf/system-config.properties
+      # - /etc/localtime:/etc/localtime
+    environment:
+      - EFAK_CLUSTER_ZK_LIST=zoo1:2181,zoo2:2181,zoo3:2181 # 所有的做时间同步宿主机 要不然会有时间问题 
+      - TZ=Asia/Shanghai
+    ports:
+      - 8048:8048
+    networks:
+      - zk-net

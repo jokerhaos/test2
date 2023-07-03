@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-// 用golang写一个方法,输入 4 个数字和一个期望值,通过加减乘除,算出期望值
+// 用golang写一个方法，输入4个数字和一个期望值，通过加减乘除，算出期望值
 func main() {
 	input := []int{2, 2, 5, 4}
-	target := 24
+	target := 21
 	calculate(input, target)
-
 }
+
 func calculate(input []int, target int) (bool, string) {
 	// 定义运算符组合
 	operators := []string{"+", "-", "*", "/"}
@@ -25,10 +25,6 @@ func calculate(input []int, target int) (bool, string) {
 				expression := fmt.Sprintf("%d %s %d %s %d %s %d", num1, op1, num2, op2, num3, op3, num4)
 				// 计算表达式结果
 				result := eval(expression)
-				// if err != nil {
-				// 	// 如果表达式计算出错，继续下一个组合
-				// 	continue
-				// }
 				// 判断计算结果是否等于期望值
 				if result == float64(target) {
 					fmt.Println(expression, "=", target)
@@ -44,14 +40,37 @@ func calculate(input []int, target int) (bool, string) {
 func eval(expression string) float64 {
 	// 将表达式字符串按空格分隔成切片
 	tokens := strings.Split(expression, " ")
-	// tokens = tokens[:len(tokens)-2]
+	// 优化：先计算乘法和除法
+	for i := 1; i < len(tokens); i += 2 {
+		operator := tokens[i]
+		if operator == "*" || operator == "/" {
+			operand1, _ := strconv.ParseFloat(tokens[i-1], 64)
+			operand2, _ := strconv.ParseFloat(tokens[i+1], 64)
+			var result float64
+			switch operator {
+			case "*":
+				result = operand1 * operand2
+			case "/":
+				if operand2 == 0 {
+					return 0
+				}
+				result = operand1 / operand2
+			}
+			// 替换乘法和除法的部分为计算结果
+			tokens[i-1] = strconv.FormatFloat(result, 'f', -1, 64)
+			// 移除乘法和除法的部分
+			tokens = append(tokens[:i], tokens[i+2:]...)
+			i -= 2 // 调整索引，继续循环
+		}
+	}
+
 	// 初始化结果为第一个数字
 	result, err := strconv.ParseFloat(tokens[0], 64)
 	if err != nil {
 		return 0
 	}
 
-	// 遍历切片中的运算符和数字，依次计算表达式
+	// 遍历剩余的运算符和数字，依次计算表达式
 	for i := 1; i < len(tokens); i += 2 {
 		operator := tokens[i]
 		operand, err := strconv.ParseFloat(tokens[i+1], 64)
@@ -64,15 +83,9 @@ func eval(expression string) float64 {
 			result += operand
 		case "-":
 			result -= operand
-		case "*":
-			result *= operand
-		case "/":
-			if operand == 0 {
-				return 0
-			}
-			result /= operand
 		}
 	}
+
 	fmt.Printf("%s ====> %#v ====> %f \r\n", expression, tokens, result)
 	return result
 }
