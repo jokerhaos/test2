@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"test/util"
 	"time"
 )
 
@@ -22,23 +23,77 @@ type B struct {
 	BBB   string
 }
 
+type MyStruct struct{}
+
+func (s MyStruct) Hello(name string) string {
+	return "Hello, " + name + "!"
+}
+
+func (s *MyStruct) Add(a, b int) int {
+	return a + b
+}
+
+func Add(a, b int) int {
+	return a + b
+}
+
+func init() {
+	// 注册
+	util.RegisterFunction("main", "Add", Add)
+}
+
 func main() {
-	a := A{
-		Name:  "Alice",
-		Age:   intPtr(25),
-		Email: "",
-		CCC:   "ccc",
+
+	// 通过包名和方法名动态调用
+	packageName := "main"
+	funcName := "Add"
+	args := []interface{}{10, 20}
+	results, err := util.Eval(packageName, funcName, args...)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
 	}
+	sum := results[0].(int)
+	fmt.Println("Result:", sum) // Output: Result: 30
 
-	b := B{
-		Name:  "Alice2",
-		Email: "john@example.com",
-		BBB:   "",
-	}
+	// 通过结构体动态调用地下方法
+	instance := MyStruct{}
 
-	CopyFields(&a, b)
+	// 调用 Hello 方法
+	result1, _ := util.CallMethod(instance, "Hello", "John")
+	fmt.Println(result1[0].(string)) // Output: Hello, John!
 
-	fmt.Printf("%#v", a)
+	// 调用 Add 方法
+	args2 := []interface{}{10, 20}
+	result2, _ := util.CallMethod(&instance, "Add", args2...)
+	fmt.Println(result2[0].(int)) // Output: 30
+
+	// fmt.Println(strings.Split("", "/")[0])
+
+	// a := make([]int, 0, 10)
+
+	// fmt.Println(a)
+
+	// b := make([]int, 10)
+
+	// fmt.Println(b)
+
+	// a := A{
+	// 	Name:  "Alice",
+	// 	Age:   intPtr(25),
+	// 	Email: "",
+	// 	CCC:   "ccc",
+	// }
+
+	// b := B{
+	// 	Name:  "Alice2",
+	// 	Email: "john@example.com",
+	// 	BBB:   "",
+	// }
+
+	// CopyFields(&a, b)
+
+	// fmt.Printf("%#v", a)
 }
 
 func CopyFields(a interface{}, b interface{}, fields ...string) (err error) {
