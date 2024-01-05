@@ -145,5 +145,5 @@ func diff(file2Path string) (bool, error) {
 		return false, err
 	}
 
-	return distance < 10, nil
+	return distance <= 10, nil
 }
