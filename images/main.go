@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 	"image"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 	"os"
 
 	"github.com/corona10/goimagehash"
+	"github.com/spf13/cast"
 )
 
 func main() {
 	prefix := "85"
 	suffix := "39"
-	total := 100
+	total := 100000
 	bufferCh := make(chan string, 10)
 	file1Path := "./1.jpeg"
 	file1, err := os.Open(file1Path)
@@ -23,13 +26,22 @@ func main() {
 	}
 	defer file1.Close()
 	img1, _, _ = image.Decode(file1)
-
+	progress := 0
+	// 获取特定位置的命令行参数，例如第一个参数
+	if len(os.Args) > 1 {
+		progress = cast.ToInt(os.Args[1])
+	}
+	fmt.Printf("进度：%d \n", progress)
 	go func() {
-		for i := 0; i < total; i++ {
+		for i := 1000 * progress; i < total; i++ {
 			// 使用 strconv.FormatInt 将整数格式化为指定宽度的字符串，左侧补零
 			middle := fmt.Sprintf("%05d", i)
 			qq := prefix + middle + suffix
 			bufferCh <- qq
+			if (i+1)%1000 == 0 {
+				progress++
+				fmt.Printf("进度：%d \n", progress)
+			}
 		}
 	}()
 
@@ -39,7 +51,10 @@ func main() {
 		err := downPhoto(qq)
 		if err == nil {
 			// 头像对比
-			b, _ := diff("./temp/" + qq + ".jpg")
+			b, err := diff("./temp/" + qq + ".jpg")
+			if err != nil {
+				fmt.Println(qq+" <> 对比:", err)
+			}
 			if b {
 				fmt.Println("头像符合的QQ：" + qq)
 				writeToFile("qq.txt", qq)
@@ -95,7 +110,7 @@ func downPhoto(qq string) error {
 		return err
 	}
 
-	fmt.Printf("头像下载成功：%s.jpg\n", qq)
+	// fmt.Printf("头像下载成功：%s.jpg\n", qq)
 	return nil
 }
 
@@ -107,6 +122,7 @@ func diff(file2Path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer os.Remove(file2Path)
 	defer file2.Close()
 
 	img2, _, err := image.Decode(file2)
@@ -129,5 +145,5 @@ func diff(file2Path string) (bool, error) {
 		return false, err
 	}
 
-	return distance < 100, nil
+	return distance < 10, nil
 }
