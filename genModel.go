@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -17,7 +16,7 @@ type TemplateData struct {
 func main() {
 	// 读取模板文件内容
 	templateFile := "./template/model.tmpl"
-	templateContent, err := ioutil.ReadFile(templateFile)
+	templateContent, err := os.ReadFile(templateFile)
 	if err != nil {
 		panic(err)
 	}

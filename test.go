@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"reflect"
+	"sync"
+	"sync/atomic"
 	"test/util"
 	"time"
 )
@@ -44,29 +47,52 @@ func init() {
 
 func main() {
 
-	// 通过包名和方法名动态调用
-	packageName := "main"
-	funcName := "Add"
-	args := []interface{}{10, 20}
-	results, err := util.Eval(packageName, funcName, args...)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
+	var wg sync.WaitGroup
+	var s int64
+	totalRows := 100021
+	concurrency := 1000
+	totalLevel := int(math.Ceil(float64(totalRows) / float64(concurrency)))
+
+	for level := 0; level < totalLevel; level++ {
+		wg.Add(1)
+		level := level
+		go func() {
+			defer wg.Done()
+			t := concurrency
+			if totalLevel-1 == level {
+				t = 21
+			}
+			for j := 0; j < t; j++ {
+				atomic.AddInt64(&s, 1)
+				// fmt.Println(a, s)
+			}
+		}()
 	}
-	sum := results[0].(int)
-	fmt.Println("Result:", sum) // Output: Result: 30
+	wg.Wait()
+	fmt.Println(s)
+	// // 通过包名和方法名动态调用
+	// packageName := "main"
+	// funcName := "Add"
+	// args := []interface{}{10, 20}
+	// results, err := util.Eval(packageName, funcName, args...)
+	// if err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// }
+	// sum := results[0].(int)
+	// fmt.Println("Result:", sum) // Output: Result: 30
 
-	// 通过结构体动态调用地下方法
-	instance := MyStruct{}
+	// // 通过结构体动态调用地下方法
+	// instance := MyStruct{}
 
-	// 调用 Hello 方法
-	result1, _ := util.CallMethod(instance, "Hello", "John")
-	fmt.Println(result1[0].(string)) // Output: Hello, John!
+	// // 调用 Hello 方法
+	// result1, _ := util.CallMethod(instance, "Hello", "John")
+	// fmt.Println(result1[0].(string)) // Output: Hello, John!
 
-	// 调用 Add 方法
-	args2 := []interface{}{10, 20}
-	result2, _ := util.CallMethod(&instance, "Add", args2...)
-	fmt.Println(result2[0].(int)) // Output: 30
+	// // 调用 Add 方法
+	// args2 := []interface{}{10, 20}
+	// result2, _ := util.CallMethod(&instance, "Add", args2...)
+	// fmt.Println(result2[0].(int)) // Output: 30
 
 	// fmt.Println(strings.Split("", "/")[0])
 

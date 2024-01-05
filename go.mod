@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/Shopify/sarama v1.38.1
-	github.com/garyburd/redigo v1.6.4
+	github.com/garyburd/redigo v1.6.2
 	github.com/samber/lo v1.38.1
 	github.com/xuri/excelize/v2 v2.7.1
 	github.com/zeromicro/go-zero v1.5.3
@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/corona10/goimagehash v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.3.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230111030713-bf00bc1b83b6 // indirect
@@ -33,6 +34,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect

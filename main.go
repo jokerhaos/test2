@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 )
 
 type Student struct {
@@ -15,7 +16,15 @@ type Monster struct {
 	Age  int
 }
 
+// 判断字符串是否是正则表达式字符串
+func IsRegexpString(input string) bool {
+	_, err := regexp.Compile(input)
+	return err == nil
+}
+
 func main() {
+	fmt.Println(IsRegexpString("  &&/aa/adsgasgdsg      、、、"))
+	return
 	num := 10
 	// test(&num)
 	test3(&num)
