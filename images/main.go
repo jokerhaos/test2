@@ -58,6 +58,8 @@ func main() {
 			if b {
 				fmt.Println("头像符合的QQ：" + qq)
 				writeToFile("qq.txt", qq)
+			} else {
+				os.Remove("./temp/" + qq + ".jpg")
 			}
 		}
 	}
@@ -122,7 +124,6 @@ func diff(file2Path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	defer os.Remove(file2Path)
 	defer file2.Close()
 
 	img2, _, err := image.Decode(file2)
