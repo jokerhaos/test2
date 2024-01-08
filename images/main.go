@@ -16,7 +16,7 @@ import (
 func main() {
 	prefix := "85"
 	suffix := "39"
-	total := 100000
+	total := 10000
 	bufferCh := make(chan string, 10)
 	file1Path := "./1.jpeg"
 	file1, err := os.Open(file1Path)
@@ -27,18 +27,19 @@ func main() {
 	defer file1.Close()
 	img1, _, _ = image.Decode(file1)
 	progress := 0
+	p := total / 100
 	// 获取特定位置的命令行参数，例如第一个参数
 	if len(os.Args) > 1 {
 		progress = cast.ToInt(os.Args[1])
 	}
 	fmt.Printf("进度：%d \n", progress)
 	go func() {
-		for i := 1000 * progress; i < total; i++ {
+		for i := p * progress; i < total; i++ {
 			// 使用 strconv.FormatInt 将整数格式化为指定宽度的字符串，左侧补零
 			middle := fmt.Sprintf("%05d", i)
 			qq := prefix + middle + suffix
 			bufferCh <- qq
-			if (i+1)%1000 == 0 {
+			if (i+1)%p == 0 {
 				progress++
 				fmt.Printf("进度：%d \n", progress)
 			}
