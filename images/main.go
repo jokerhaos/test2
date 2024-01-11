@@ -43,13 +43,13 @@ func main() {
 			// 使用 strconv.FormatInt 将整数格式化为指定宽度的字符串，左侧补零
 			middle := fmt.Sprintf("%0"+cast.ToString(gap)+"d", i)
 			qq := prefix + middle + suffix
-			fmt.Println(qq)
 			bufferCh <- qq
 			if (i+1)%p == 0 {
 				progress++
 				fmt.Printf("进度：%d \n", progress)
 			}
 		}
+		close(bufferCh)
 	}()
 
 	// 循环缓冲写入数据
