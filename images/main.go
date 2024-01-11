@@ -27,11 +27,14 @@ func main() {
 	defer file1.Close()
 	img1, _, _ = image.Decode(file1)
 	progress := 0
-	p := total / 100
 	// 获取特定位置的命令行参数，例如第一个参数
 	if len(os.Args) > 1 {
 		progress = cast.ToInt(os.Args[1])
 	}
+	if len(os.Args) > 2 {
+		total = cast.ToInt(os.Args[2])
+	}
+	p := total / 100
 	fmt.Printf("进度：%d \n", progress)
 	go func() {
 		for i := p * progress; i < total; i++ {
