@@ -6,6 +6,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
+	"math"
 	"net/http"
 	"os"
 
@@ -14,9 +15,18 @@ import (
 )
 
 func main() {
+	progress := 0
+	var gap float64 = 6
+	// 获取特定位置的命令行参数，例如第一个参数
+	if len(os.Args) > 1 {
+		progress = cast.ToInt(os.Args[1])
+	}
+	if len(os.Args) > 2 {
+		gap = cast.ToFloat64(os.Args[2])
+	}
 	prefix := "85"
 	suffix := "39"
-	total := 10000
+	total := int(math.Pow(10, gap+1))
 	bufferCh := make(chan string, 10)
 	file1Path := "./1.jpeg"
 	file1, err := os.Open(file1Path)
@@ -26,21 +36,14 @@ func main() {
 	}
 	defer file1.Close()
 	img1, _, _ = image.Decode(file1)
-	progress := 0
-	// 获取特定位置的命令行参数，例如第一个参数
-	if len(os.Args) > 1 {
-		progress = cast.ToInt(os.Args[1])
-	}
-	if len(os.Args) > 2 {
-		total = cast.ToInt(os.Args[2])
-	}
 	p := total / 100
 	fmt.Printf("进度：%d \n", progress)
 	go func() {
 		for i := p * progress; i < total; i++ {
 			// 使用 strconv.FormatInt 将整数格式化为指定宽度的字符串，左侧补零
-			middle := fmt.Sprintf("%05d", i)
+			middle := fmt.Sprintf("%0"+cast.ToString(gap)+"d", i)
 			qq := prefix + middle + suffix
+			fmt.Println(qq)
 			bufferCh <- qq
 			if (i+1)%p == 0 {
 				progress++
